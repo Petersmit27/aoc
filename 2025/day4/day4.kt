@@ -12,7 +12,7 @@ operator fun Coordinate.plus(other: Coordinate) = x + other.x to y + other.y
 
 
 typealias PaperGrid = MutableList<MutableList<Boolean>>
-fun PaperGrid.isValidCoordinate(c: Coordinate) = c.x < this[0].size && c.y < size && c.x >= 0 && c.y >= 0
+operator fun PaperGrid.contains(c: Coordinate) = c.x < this[0].size && c.y < size && c.x >= 0 && c.y >= 0
 operator fun PaperGrid.get(c: Coordinate) = this[c.y][c.x]
 operator fun PaperGrid.set(c: Coordinate, value: Boolean) {
     this[c.y][c.x] = value
@@ -29,7 +29,8 @@ fun PaperGrid.isMovable(c: Coordinate): Boolean {
     var adjacentCount = 0
 
     for (dc in adjacentMutations) {
-        if (isValidCoordinate(c + dc) && this[c + dc]) {
+        val c = c + dc
+        if (c in this && this[c]) {
             adjacentCount++
             if (adjacentCount >= 4) {
                 return false
