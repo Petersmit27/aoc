@@ -23,31 +23,30 @@ fun parseCephalopodProblems(homework: List<String>): Collection<CephalopodProble
     val result = mutableSetOf<CephalopodProblem>()
     val numberLines = homework.dropLast(1)
     val operatorLine = homework.last()
-    val problemEndIndices = operatorLine.indices.filter { i -> homework.all { it[i] == ' ' } }
-        .toMutableList().also { it.add(operatorLine.lastIndex + 1) }
 
-    for (endIndex in problemEndIndices) {
-        val numbers = mutableSetOf<Long>()
-        for (i in generateSequence(endIndex - 1) { it - 1 }) {
-            // Parse this column's number
-            var stringNumber = ""
-            numberLines.forEach {
-                if (it[i].isDigit()) {
-                    stringNumber+=it[i]
-                }
-            }
-            numbers.add(stringNumber.toLong())
-
-            // Check if we encountered the operator
-            if (operatorLine[i] == '+') {
-                result.add(Pair(Long::plus, numbers))
-                break
-            } else if (operatorLine[i] == '*') {
-                result.add(Pair(Long::times, numbers))
-                break
+    var currentNumbers = mutableSetOf<Long>()
+    for (i in operatorLine.indices.reversed()) {
+        // Parse this column's number
+        var stringNumber = ""
+        numberLines.forEach {
+            if (it[i].isDigit()) {
+                stringNumber+=it[i]
             }
         }
+        if (stringNumber.isNotEmpty()) {
+            currentNumbers.add(stringNumber.toLong())
+        }
+
+        // Check if we encountered the operator
+        if (operatorLine[i] == '+') {
+            result.add(Pair(Long::plus, currentNumbers))
+            currentNumbers = mutableSetOf()
+        } else if (operatorLine[i] == '*') {
+            result.add(Pair(Long::times, currentNumbers))
+            currentNumbers = mutableSetOf()
+        }
     }
+
     return result
 }
 
